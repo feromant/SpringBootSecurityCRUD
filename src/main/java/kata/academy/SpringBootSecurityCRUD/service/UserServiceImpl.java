@@ -1,14 +1,11 @@
 package kata.academy.SpringBootSecurityCRUD.service;
 
-import kata.academy.SpringBootSecurityCRUD.repository.RoleRepository;
-import kata.academy.SpringBootSecurityCRUD.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import kata.academy.SpringBootSecurityCRUD.dao.UserDao;
@@ -19,34 +16,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class UserServiceImpl implements UserRepository {
-    private UserRepository userRepository;
-    private RoleRepository roleRepository;
-    private BCryptPasswordEncoder passwordEncoder;
+public class UserServiceImpl implements UserService {
+    private final UserDao dao;
+
+    public UserServiceImpl(UserDao dao) {
+        this.dao = dao;
+    }
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository,
-                       RoleRepository roleRepository,
-                       BCryptPasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
-//public class UserServiceImpl implements UserService {
-//    private final UserDao dao;
-//
-//    public UserServiceImpl(UserDao dao) {
-//        this.dao = dao;
-//    }
-//
-//    @Autowired
-//    private PasswordEncoder passwordEncoder;
+    private BCryptPasswordEncoder passwordEncoder;
 
-//    @Transactional
-//    @Override
-    public void saveUser(User user) {
+    @Transactional
+    @Override
+    public void addUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.saveUser(user);
+        dao.saveUser(user);
     }
 
     @Transactional(readOnly = true)
